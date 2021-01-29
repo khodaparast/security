@@ -2,9 +2,9 @@
 
 # Primitive setup
 
-fsid=$(uuidgen) 
-host=$(hostname) 
-ip=$(hostname -I | awk '{print $1}')
+fsid=$(uuidgen); 
+host=$(hostname) ;
+ip=$(hostname -I | awk '{print $1}');
 
 
 vim /etc/ceph/ceph.conf 
