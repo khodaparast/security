@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+
+./install-deps.sh
+
 ./make-dist
 
 CEPH_TAR=ceph*.tar.bz2
