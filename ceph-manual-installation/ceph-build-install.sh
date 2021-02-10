@@ -1,3 +1,5 @@
+#!/bin/bash -e
+
 
 ./install_deps.sh
 
