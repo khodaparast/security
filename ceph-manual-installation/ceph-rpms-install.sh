@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 
-./install-deps.sh -j$NUMBER_OF_CPU_CORE ./do_cmake.sh -DWITH_MANPAGE=OFF -DWITH_BABELTRACE=OFF -DWITH_MGR_DASHBOARD_FRONTEND=OFF
+./install-deps.sh -j$(nproc) ./do_cmake.sh -DWITH_MANPAGE=OFF -DWITH_BABELTRACE=OFF -DWITH_MGR_DASHBOARD_FRONTEND=OFF
 
 
 ./make-dist
