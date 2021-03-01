@@ -2,15 +2,15 @@ CC = g++
 CFLAGS = -ggdb -Wall -Werror -DDEBUG
 
 
-IDIR = /home/casauser/Desktop/Project-git/c++/openssl
-SDIR = /home/casauser/Desktop/Project-git/c++/enc_dec_openssl/src
+IDIR = ./openssl
+SDIR = ./src
 
 VPATH = SDIR IDIR
 
 LIBS = -lcrypto -lpthread -lssl  -lz -ldl
 
 EDO: test_ssl_enc.o
-	 $(CC)  test_ssl_enc.o -L/home/casauser/Desktop/Project-git/c++/enc_dec_openssl/lib $(LIBS) -I$(IDIR) -o EDO
+	 $(CC)  test_ssl_enc.o -L/lib $(LIBS) -I$(IDIR) -o EDO
 
 
 main.o: $(SDIR)/test_ssl_enc.cc
