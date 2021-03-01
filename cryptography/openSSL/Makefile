@@ -13,7 +13,7 @@ EDO: test_ssl_enc.o
 	 $(CC)  test_ssl_enc.o -L/lib $(LIBS) -I$(IDIR) -o EDO
 
 
-main.o: $(SDIR)/test_ssl_enc.cc
+test_ssl_enc.o: $(SDIR)/test_ssl_enc.cc
 	$(CC)  -c $(SDIR)/test_ssl_enc.cc -I$(IDIR)
 
 
