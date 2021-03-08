@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-# Primitive setup
+# Primitive setup for deployment
 
 fsid=$(uuidgen); 
 host=$(hostname) ;
