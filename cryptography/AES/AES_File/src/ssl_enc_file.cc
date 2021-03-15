@@ -104,20 +104,6 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
     return plaintext_len;
 }
 
-/*bool OpenSSLCryptoAccel::cbc_encrypt(unsigned char *out, const unsigned char *in, size_t size,
-                                     const unsigned char (&iv)[AES_256_IVSIZE],
-                                     const unsigned char (&key)[AES_256_KEYSIZE])
-{
-    if ((size % AES_256_IVSIZE) != 0)
-    {
-        return false;
-    }
-
-    return evp_transform(out, in, size, const_cast<unsigned char *>(&iv[0]),
-                         const_cast<unsigned char *>(&key[0]),
-                         nullptr, // Hardware acceleration engine can be used in the future
-                         EVP_aes_256_cbc(), AES_ENCRYPT);
-}*/
 
 int main(int argc, char *argv[])
 {
@@ -132,9 +118,7 @@ int main(int argc, char *argv[])
     /* A 128 bit IV */
     unsigned char *iv = (unsigned char *)"0123456789012345";
 
-    /* Message to be encrypted */
-    unsigned char *plaintext =
-        (unsigned char *)"The quick brown fox jumps over the lazy dog";
+   
 
     /*Read file*/
     std::ifstream in(argv[1]);
@@ -171,15 +155,6 @@ int main(int argc, char *argv[])
     decryptedtext[decryptedtext_len] = '\0';
 
 
-/* encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
-            unsigned char *iv, unsigned char *ciphertext)*/
-
-
-  /*  cbc_encrypt(unsigned char *out, const unsigned char *in, size_t size,
-                const unsigned char(&iv)[AES_256_IVSIZE],
-                const unsigned char(&key)[AES_256_KEYSIZE])*/
-
-         //cbc_encrypt(ciphertext, ucontents, strlen((char *)ucontents);
 
         /* Show the decrypted text */
         printf("Decrypted text is:\n");
