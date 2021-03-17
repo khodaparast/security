@@ -6,6 +6,10 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include "../headers/ssl_enc_file.h"
+// #include <ssl_enc_file.h>
+
+
 using namespace std;
 
 void handleErrors(void)
@@ -104,7 +108,18 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
     return plaintext_len;
 }
 
+int setupEnc(void){
 
+ /* A 256 bit key */
+    unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+
+    /* A 128 bit IV */
+    unsigned char *iv = (unsigned char *)"0123456789012345";
+
+   
+
+
+}
 int main(int argc, char *argv[])
 {
     /*
