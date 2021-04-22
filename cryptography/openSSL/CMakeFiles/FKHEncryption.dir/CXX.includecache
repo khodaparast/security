@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/fatemeh/Desktop/gitProject/security/cryptography/openSSL/src/test_ssl_enc.cc
+openssl/conf.h
+-
+openssl/evp.h
+-
+openssl/err.h
+-
+string.h
+-
+iostream
+-
+string
+-
+
