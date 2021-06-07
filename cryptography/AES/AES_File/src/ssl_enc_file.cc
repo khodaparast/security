@@ -8,7 +8,7 @@
 #include <fstream>
 #include "../headers/ssl_enc_file.h"
 // #include <ssl_enc_file.h>
-
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -116,7 +116,7 @@ int setupEnc(void){
     /* A 128 bit IV */
     unsigned char *iv = (unsigned char *)"0123456789012345";
 
-   
+   return 0;
 
 
 }
@@ -151,29 +151,69 @@ int main(int argc, char *argv[])
 
     /* Buffer for the decrypted text */
     unsigned char decryptedtext[128];
+    unsigned char decryptedtext_from_file[128];
 
-    int decryptedtext_len, ciphertext_len;
+    int decryptedtext_len, decryptedtext_len_from_file, ciphertext_len;
 
     /* Encrypt the plaintext */
     ciphertext_len = encrypt(ucontents, strlen((char *)ucontents), key, iv,
                              ciphertext);
 
+    std::cout<< "ciphertext_len : "<< ciphertext_len << std::endl;
+
+    std::string enc_str(reinterpret_cast<char*>(ciphertext),ciphertext_len);
+std::cout << "######################### enc_str !!!!!!!!!!!!!!!!!!!!!!:" << enc_str << std::endl;
+
     /* Do something useful with the ciphertext here */
-    printf("Ciphertext is:\n");
-    BIO_dump_fp(stdout, (const char *)ciphertext, ciphertext_len);
+    std::cout<<("Ciphertext is:\n");
+      BIO_dump_fp(stdout, (const char *)ciphertext, ciphertext_len);
 
-    /* Decrypt the ciphertext */
-    decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv,
-                                decryptedtext);
+      std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>." << std::endl;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// the following for lines write ciphertext into "enc.txt"
+     std::ofstream myfile("enc.txt", std::ios::out | std::ios::binary);
+     ciphertext[ciphertext_len]= '\0';
+     myfile << ciphertext;
+     myfile.close();
 
-    /* Add a NULL terminator. We are expecting printable text */
-    decryptedtext[decryptedtext_len] = '\0';
+    
+    
+
+    
+    
 
 
 
-        /* Show the decrypted text */
-        printf("Decrypted text is:\n");
-    printf("%s\n", decryptedtext);
+     std::ifstream enc_file("enc.txt", std::ios::in | std::ios::binary);
+     std::string str_enc_file((std::istreambuf_iterator<char>(enc_file)),
+                        std::istreambuf_iterator<char>());
+     auto enc_contents = str_enc_file.data();
+     auto un_enc_ucontents = reinterpret_cast<unsigned char *>(const_cast<char *>(enc_contents));
 
-    return 0;
+     std::cout << "ciphertext >>>>> " << ciphertext << std::endl;
+     std::cout << "str_enc_file.data() >>>>>>> " << str_enc_file.data() << std::endl;
+     int file_size = str_enc_file.size();
+     std::cout << "file size : " << file_size << std::endl;
+     enc_file.close();
+
+     /* Decrypt the ciphertext */
+     decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv,decryptedtext);
+     decryptedtext_len_from_file = decrypt(un_enc_ucontents, file_size, key, iv,decryptedtext_from_file);
+
+     /* Add a NULL terminator. We are expecting printable text */
+     decryptedtext[decryptedtext_len] = '\0';
+     decryptedtext_from_file[decryptedtext_len_from_file] = '\0';
+
+     /* Show the decrypted text */
+     printf("Decrypted text is:\n");
+     printf("%s\n", decryptedtext);
+
+
+//
+     /* Show the decrypted text from file*/
+     printf("Decrypted text from file is:\n");
+     printf("%s\n", decryptedtext_from_file);
+
+     return 0;
 }
+
