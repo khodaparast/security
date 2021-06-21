@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/fatemeh/Desktop/gitProject/security/cryptography/crypto/Crypto.cpp
+Crypto.h
+/home/fatemeh/Desktop/gitProject/security/cryptography/crypto/Crypto.h
+
+/home/fatemeh/Desktop/gitProject/security/cryptography/crypto/Crypto.h
+openssl/evp.h
+-
+openssl/pem.h
+-
+openssl/aes.h
+-
+openssl/err.h
+-
+openssl/rand.h
+-
+stdio.h
+-
+string
+-
+string.h
+-
+fstream
+-
+iostream
+-
+

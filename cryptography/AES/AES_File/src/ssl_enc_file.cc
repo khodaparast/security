@@ -120,7 +120,7 @@ int setupEnc(void){
 
 
 }
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     /*
      * Set up the key and iv. Do I need to say to not hard code these in a
@@ -197,22 +197,29 @@ std::cout << "######################### enc_str !!!!!!!!!!!!!!!!!!!!!!:" << enc_
      enc_file.close();
 
      /* Decrypt the ciphertext */
-     decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv,decryptedtext);
+    //  decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv,decryptedtext);
      decryptedtext_len_from_file = decrypt(un_enc_ucontents, file_size, key, iv,decryptedtext_from_file);
 
+
+   std::ofstream decryptedFile("dec.txt", std::ios::out | std::ios::binary);
+    //  ciphertext[ciphertext_len]= '\0';
+     myfile << decryptedtext_from_file;
+     myfile.close();
+
+
      /* Add a NULL terminator. We are expecting printable text */
-     decryptedtext[decryptedtext_len] = '\0';
-     decryptedtext_from_file[decryptedtext_len_from_file] = '\0';
+    //  decryptedtext[decryptedtext_len] = '\0';
+    //  decryptedtext_from_file[decryptedtext_len_from_file] = '\0';
 
      /* Show the decrypted text */
-     printf("Decrypted text is:\n");
-     printf("%s\n", decryptedtext);
+    //  printf("Decrypted text is:\n");
+    //  printf("%s\n", decryptedtext);
 
 
 //
      /* Show the decrypted text from file*/
-     printf("Decrypted text from file is:\n");
-     printf("%s\n", decryptedtext_from_file);
+    //  printf("Decrypted text from file is:\n");
+    //  printf("%s\n", decryptedtext_from_file);
 
      return 0;
 }
