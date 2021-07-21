@@ -3,6 +3,23 @@
 using namespace std;
  
 
+struct bench_data {
+  bool done; //is the benchmark is done
+  uint64_t object_size; //the size of the objects
+  uint64_t op_size;     // the size of the read/write ops
+  bool hints;
+  // same as object_size for write tests
+  int in_flight; //number of reads/writes being waited on
+  int started;
+  int finished;
+  double min_latency;
+  double max_latency;
+  double avg_latency;
+  double latency_diff_sum;
+  char *object_contents; //pointer to the contents written to each object
+};
+
+
 Crypto::Crypto() {
       
     init();
@@ -98,25 +115,25 @@ int Crypto::init() {
     aesKey = (unsigned char*)malloc(AES_KEYLEN/8);
     aesIV = (unsigned char*)malloc(AES_KEYLEN/8);
 
-    unsigned char *aesPass = (unsigned char*)malloc(AES_KEYLEN/8);
-    unsigned char *aesSalt = (unsigned char*)malloc(8);
+    // unsigned char *aesPass = (unsigned char*)malloc(AES_KEYLEN/8);
+    // unsigned char *aesSalt = (unsigned char*)malloc(8);
  
-    if(aesKey == NULL || aesIV == NULL || aesPass == NULL || aesSalt == NULL) {
-        return FAILURE;
-    }
+    // if(aesKey == NULL || aesIV == NULL || aesPass == NULL || aesSalt == NULL) {
+    //     return FAILURE;
+    // }
 
-    // Get some random data to use as the AES pass and salt
-    if(RAND_bytes(aesPass, AES_KEYLEN/8) == 0) {
-        return FAILURE;
-    }
+    // // Get some random data to use as the AES pass and salt
+    // if(RAND_bytes(aesPass, AES_KEYLEN/8) == 0) {
+    //     return FAILURE;
+    // }
 
-    if(RAND_bytes(aesSalt, 8) == 0) {
-        return FAILURE;
-    }
+    // if(RAND_bytes(aesSalt, 8) == 0) {
+    //     return FAILURE;
+    // }
  
-    if(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha1(), aesSalt, aesPass, AES_KEYLEN/8, AES_ROUNDS, aesKey, aesIV) == 0) {
-        return FAILURE;
-    }
+    // if(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha1(), aesSalt, aesPass, AES_KEYLEN/8, AES_ROUNDS, aesKey, aesIV) == 0) {
+    //     return FAILURE;
+    // }
  
     return SUCCESS;
 }
@@ -177,6 +194,31 @@ int Crypto::aesDecrypt(unsigned char *encMsg, size_t encMsgLen, char **decMsg) {
 
 
 
+static void sanitize_object_contents (bench_data *data, size_t length) {
+  // FIPS zeroization audit 20191115: this memset is not security related.
+  memset(data->object_contents, 'z', length);
+
+//   // do encryption
+//    Crypto cryptObj;
+//    unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+//    unsigned char *iv = (unsigned char *)"0123456789012345";
+//     cryptObj.setAESKey(key, 256);
+//     cryptObj.setAESIv(iv, 128);
+//     unsigned char *plaintext4 = (unsigned char *)data->object_contents;
+//     unsigned char *encMsgOut4;
+//     int encLen4 = cryptObj.aesEncrypt(plaintext4, data->op_size, &encMsgOut4);
+//     data->object_contents = (char*)encMsgOut4;
+
+
+
+   // derypt
+    // char *decMsg4;
+    // cryptObj.aesDecrypt( (unsigned char *)data->object_contents , encLen4, &decMsg4);
+    // std::cout<< "(1) " << decMsg4 <<std::endl;
+ 
+}
+
+
 
 int main(int argc, char **argv){
 
@@ -191,9 +233,6 @@ int main(int argc, char **argv){
     unsigned char *iv = (unsigned char *)"0123456789012345";
     cryptObj.setAESKey(key, 256);
     cryptObj.setAESIv(iv, 128);
-
-    std::cout<< "File name >>>>>>>>>>>>>" <<argv[1]<<std::endl;
-
 
     // read input file, convert it to unsigned char array 
     std::ifstream in(argv[1]);
@@ -215,12 +254,22 @@ int main(int argc, char **argv){
     myEncFile.close();
 
 
-    std::cout<< "plaintext size : "<< messageSize<<std::endl;
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Decryption from file <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     std::ifstream in2("enc.txt");
     std::string encFile((std::istreambuf_iterator<char>(in2)),
                         std::istreambuf_iterator<char>());
-    std::cout<< "enc file size : "<< encFile.size()<<std::endl;
-    std::cout<< "encLen size : "<< encLen<<std::endl;
+
+    unsigned char *ciphertext = (unsigned char *)encFile.c_str(); // string --> unsigned char*
+    char *decMsg2;
+    cryptObj.aesDecrypt(ciphertext, encFile.size(), &decMsg2);
+
+    std::ofstream myDecFile2("dec2.txt", std::ios::out | std::ios::binary);
+    myDecFile2 << decMsg2;
+    myDecFile2.close();
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
 
 
     // decryption (two next lines properly decrypt message, it receive encMsg. 
@@ -234,23 +283,37 @@ int main(int argc, char **argv){
     myDecFile << decMsg;
     myDecFile.close();
 
-
-
-
-
-
-
-    unsigned char *ciphertext = (unsigned char *)encFile.c_str(); // string --> unsigned char*
-    char *decMsg2;
-    cryptObj.aesDecrypt(ciphertext, encFile.size(), &decMsg2);
-
-    std::ofstream myDecFile2("dec2.txt", std::ios::out | std::ios::binary);
-    myDecFile2 << decMsg2;
-    myDecFile2.close();
-
-
-
-
     std::cout<<"<<<<<<<<<<< ( 5 ) >>>>>>>>>>>>"<<std::endl;
+
+    // 
+    struct bench_data *data=new bench_data;
+    data->op_size =  1024;
+    char* contentsChars = new char[data->op_size];
+    data->object_contents=contentsChars;
+
+
+    sanitize_object_contents(data, data->op_size);
+    std::cout << "data->object_contents " <<data->object_contents << std::endl;
+
+     // encrypt plaintext
+    unsigned char *plaintext4 = (unsigned char *)data->object_contents;
+    unsigned char *encMsgOut4;
+    int encLen4 = cryptObj.aesEncrypt(plaintext4, data->op_size, &encMsgOut4);
+    std::cout<< "encMsgOut4: " <<encMsgOut4 <<std::endl;
+
+    // derypt
+    char *decMsg4;
+    cryptObj.aesDecrypt(encMsgOut4, encLen4, &decMsg4);
+    std::cout<< "decMsg4" <<decMsg4 <<std::endl;
+
+    std::cout<<"<<<<<<<<<<< ( 6 ) >>>>>>>>>>>>"<<std::endl;
+    // unsigned char *x = (unsigned char *)"something";
+
+    // std::string plain_str(reinterpret_cast<char *>(x));
+
+
+
+
+    
 
 }
