@@ -1,0 +1,3 @@
+/home/fatemeh/Desktop/gitProject/security/cryptography/crypto/build/CMakeFiles/rebuild_cache.dir
+/home/fatemeh/Desktop/gitProject/security/cryptography/crypto/build/CMakeFiles/edit_cache.dir
+/home/fatemeh/Desktop/gitProject/security/cryptography/crypto/build/CMakeFiles/AESENC.dir

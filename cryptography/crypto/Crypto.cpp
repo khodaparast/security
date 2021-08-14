@@ -1,7 +1,11 @@
 #include "Crypto.h"
- 
+#include  <chrono>
+#include <iterator>
+
 using namespace std;
  
+
+
 
 struct bench_data {
   bool done; //is the benchmark is done
@@ -18,6 +22,81 @@ struct bench_data {
   double latency_diff_sum;
   char *object_contents; //pointer to the contents written to each object
 };
+
+
+static void sanitize_object_contents (bench_data *data, size_t length) {
+  // FIPS zeroization audit 20191115: this memset is not security related.
+  memset(data->object_contents, 'z', length);
+ 
+}
+
+
+// unsigned char* benchEncrypt(int& cipher_len){
+
+//     struct bench_data *data=new bench_data;
+//     data->op_size =  2048;
+//     char* contentsChars = new char[data->op_size];
+//     data->object_contents=contentsChars;
+//     // unsigned char *ciphertext;
+
+//     sanitize_object_contents(data, data->op_size);
+//     std::cout<< "data->object_contents: " << data->object_contents << std::endl;
+//     unsigned char *plaintext = (unsigned char *)data->object_contents;
+    
+//     std::cout<< "----------------------------------------------------------------- " <<  std::endl;
+//     std::cout<< "plaintext : " << plaintext<< std::endl;
+
+//     unsigned char* result;
+
+//     // encrypt plaintext
+//     Crypto cryptObj;
+
+//     unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+//     unsigned char *iv = (unsigned char *)"0123456789012345";
+//     cryptObj.setAESKey(key, 256);
+//     cryptObj.setAESIv(iv, 128);
+
+    
+
+//     // encrypt plaintext
+//     cipher_len = cryptObj.aesEncrypt(plaintext, data->op_size, &result);
+//     std::cout<< "cipher_len: " << cipher_len << std::endl;
+//     std::cout<< "plaintext: " << strlen(( char*) plaintext)<< std::endl;
+//     std::cout<< "Size of key: " << strlen(( char*) key)<< std::endl;
+//     std::cout<< "Size of result inside function: " << cipher_len << std::endl;
+//     std::cout<< "result: " << result << std::endl;
+//     // result[cipher_len] = '\0';
+//     return result;
+// }
+
+unsigned char* do_enc(Crypto& cryptObj){
+
+    struct bench_data *data2=new bench_data;
+    data2->op_size =  4096;
+    char* contentsChars2 = new char[data2->op_size];
+    data2->object_contents=contentsChars2;
+
+    sanitize_object_contents(data2, data2->op_size);
+
+     // encrypt plaintext
+    unsigned char *plaintext5 = (unsigned char *)data2->object_contents;
+    unsigned char *encMsgOut5;
+    int encLen5 = cryptObj.aesEncrypt(plaintext5, data2->op_size, &encMsgOut5);
+
+    // std::cout << "encLen5 :  " << encLen5 << std::endl;
+    // std::cout << "----------------------------------------" << std::endl;
+    // std::cout << "plaintext5 :  " << plaintext5 << std::endl;
+    // std::cout << "----------------------------------------" << std::endl;
+    // std::cout << "encMsgOut5 :  " << encMsgOut5 << std::endl;
+  
+
+    // derypt
+    char *decMsg5;
+    cryptObj.aesDecrypt(encMsgOut5, encLen5, &decMsg5);
+    // std::cout << "----------------------------------------" << std::endl;
+    // std::cout << "decMsg5 :  " << decMsg5 << std::endl;
+    return encMsgOut5;
+}
 
 
 Crypto::Crypto() {
@@ -193,48 +272,64 @@ int Crypto::aesDecrypt(unsigned char *encMsg, size_t encMsgLen, char **decMsg) {
 }
 
 
+void test2(unsigned char*& b ){
 
-static void sanitize_object_contents (bench_data *data, size_t length) {
-  // FIPS zeroization audit 20191115: this memset is not security related.
-  memset(data->object_contents, 'z', length);
+    std::cout << " test 2: before " << b << std::endl;
 
-//   // do encryption
-//    Crypto cryptObj;
-//    unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
-//    unsigned char *iv = (unsigned char *)"0123456789012345";
-//     cryptObj.setAESKey(key, 256);
-//     cryptObj.setAESIv(iv, 128);
-//     unsigned char *plaintext4 = (unsigned char *)data->object_contents;
-//     unsigned char *encMsgOut4;
-//     int encLen4 = cryptObj.aesEncrypt(plaintext4, data->op_size, &encMsgOut4);
-//     data->object_contents = (char*)encMsgOut4;
+    b = (unsigned char *)"abcd";
 
+    std::cout << " test 2: after " << b << std::endl;
+} 
 
+void test1(unsigned char*& a){
 
-   // derypt
-    // char *decMsg4;
-    // cryptObj.aesDecrypt( (unsigned char *)data->object_contents , encLen4, &decMsg4);
-    // std::cout<< "(1) " << decMsg4 <<std::endl;
- 
+test2(a);
+std::cout<< " test 1: " << a << std::endl;
+
 }
 
 
 
 int main(int argc, char **argv){
 
-// file encryption up to 9MB has been tested with this script
+    // unsigned char *c = (unsigned char *)"01234567890123456789012345678901";
+    // test1(c);
+    // std::cout<< " main: " << c << std::endl;
+   
 
-    Crypto cryptObj;
 
- /* A 256 bit key */
+    //-----------------------------------------------------------------------------------------------------
+
+   
+
+
+
+    //-----------------------------------------------------------------------------------------------------
+    // int plaintext_len7 = 100000;
+    // int cipher_len;
+    // unsigned char* result= benchEncrypt(cipher_len);
+   
+    // std::cout<< "result : " << result << std::endl;
+    // std::cout << "Size of result outside function: " << cipher_len << std::endl;
+
+   
+
+    // std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (0) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<std::endl;
+
+
+     Crypto cryptObj;
     unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
-
-    /* A 128 bit IV */
     unsigned char *iv = (unsigned char *)"0123456789012345";
     cryptObj.setAESKey(key, 256);
-    cryptObj.setAESIv(iv, 128);
+    cryptObj.setAESIv(iv, 128); 
 
-    // read input file, convert it to unsigned char array 
+    // unsigned char *encMsgOut5;
+     do_enc(cryptObj);
+    // std::cout << "encMsgOut5 :  " << encMsgOut5 << std::endl;
+    // char *decMsg7;
+    // cryptObj.aesDecrypt(result, cipher_len, &decMsg7);
+    // std::cout<< "decMsg7 : " << decMsg7 << std::endl;
+    //-----------------------------------------------------------------------------------------------------
     std::ifstream in(argv[1]);
     std::string strFile((std::istreambuf_iterator<char>(in)),
                         std::istreambuf_iterator<char>());
@@ -253,8 +348,6 @@ int main(int argc, char **argv){
     myEncFile.write((char *)&encMsgOut[0], encLen);
     myEncFile.close();
 
-
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Decryption from file <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     std::ifstream in2("enc.txt");
     std::string encFile((std::istreambuf_iterator<char>(in2)),
                         std::istreambuf_iterator<char>());
@@ -266,13 +359,12 @@ int main(int argc, char **argv){
     std::ofstream myDecFile2("dec2.txt", std::ios::out | std::ios::binary);
     myDecFile2 << decMsg2;
     myDecFile2.close();
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (1) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<std::endl;
 
 
 
-
-
-    // decryption (two next lines properly decrypt message, it receive encMsg. 
+    //-----------------------------------------------------------------------------------------------------
+    // decryption (two next lines properly decrypt message, it receives encMsg. 
     // try decryption from file and check functionality)
     // encLen is equal to encFile.size(), in decryption with two different phases use file size
     char *decMsg;
@@ -282,38 +374,112 @@ int main(int argc, char **argv){
     std::ofstream myDecFile("dec.txt", std::ios::out | std::ios::binary);
     myDecFile << decMsg;
     myDecFile.close();
+    // std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (2) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<std::endl;
 
-    std::cout<<"<<<<<<<<<<< ( 5 ) >>>>>>>>>>>>"<<std::endl;
 
-    // 
+
+    //-----------------------------------------------------------------------------------------------------
     struct bench_data *data=new bench_data;
-    data->op_size =  1024;
+    data->op_size = std::stoi(argv[2]);
     char* contentsChars = new char[data->op_size];
     data->object_contents=contentsChars;
 
-
-    sanitize_object_contents(data, data->op_size);
-    std::cout << "data->object_contents " <<data->object_contents << std::endl;
+    // sanitize_object_contents(data, data->op_size);
+    sanitize_object_contents(data,  data->op_size);
 
      // encrypt plaintext
     unsigned char *plaintext4 = (unsigned char *)data->object_contents;
     unsigned char *encMsgOut4;
+    auto start = chrono::steady_clock::now();
     int encLen4 = cryptObj.aesEncrypt(plaintext4, data->op_size, &encMsgOut4);
-    std::cout<< "encMsgOut4: " <<encMsgOut4 <<std::endl;
+    // std::cout << "encLen4 :  " << encLen4 << std::endl;
+    auto end = chrono::steady_clock::now();
+    auto diff = end - start;
+    // std::cout << "enccryption time, ns:  " << chrono::duration <double, nano> (diff).count() << " ns" << endl;
+    // std::cout << "encryption time, ms:  " << chrono::duration <double, nano> (diff).count()/1000000 << " ms" << endl;
+    // std::cout <<"encryption time, s:  " <<chrono::duration <double, nano> (diff).count()/1000000000 << " s" << endl;
+        std::cout << encLen4<< ", " <<chrono::duration <double, nano> (diff).count() << ", "<< chrono::duration <double, nano> (diff).count()/1000000 << ", " << chrono::duration <double, nano> (diff).count()/1000000000  << endl;
 
-    // derypt
+    // std::cout<< "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+
+
+ // derypt
+    auto start3 = chrono::steady_clock::now();
     char *decMsg4;
     cryptObj.aesDecrypt(encMsgOut4, encLen4, &decMsg4);
-    std::cout<< "decMsg4" <<decMsg4 <<std::endl;
+    auto end3 = chrono::steady_clock::now();
+    auto diff3 = end3 - start3;
+    // std::cout << "decryption time, ns:  " <<chrono::duration <double, nano> (diff3).count() << " ns" << endl;
+    // std::cout <<  "decryption time, ms:  " <<chrono::duration <double, nano> (diff3).count()/1000000 << " ms" << endl;
+    // std::cout << "decryption time, s:  "  <<  chrono::duration <double, nano> (diff3).count()/1000000000 << " s" << endl;
 
-    std::cout<<"<<<<<<<<<<< ( 6 ) >>>>>>>>>>>>"<<std::endl;
-    // unsigned char *x = (unsigned char *)"something";
-
-    // std::string plain_str(reinterpret_cast<char *>(x));
+    // std::cout << encLen4<< ", " <<chrono::duration <double, nano> (diff3).count() << ", "<< chrono::duration <double, nano> (diff3).count()/1000000 << ", " << chrono::duration <double, nano> (diff3).count()/1000000000  << endl;
+        // std::cout<< " ////////////////////////////////////////////////////////////////////////////////////////////" << std::endl;
 
 
+    // std::ifstream in3("crypto/build/BigFile.txt");
+    // std::string strFile3((std::istreambuf_iterator<char>(in3)),
+    //                     std::istreambuf_iterator<char>());
+    // auto contents3 = strFile3.c_str();
+    // auto message3 = reinterpret_cast<unsigned char *>(const_cast<char *>(contents3));
 
 
-    
+    // encrypt plaintext
+    // auto start2 = chrono::steady_clock::now();
+    // size_t messageSize3 = strFile3.size();
+    // unsigned char *encMsgOut3;
+    // int encLen3 = cryptObj.aesEncrypt(message3, messageSize3, &encMsgOut);
+    // auto end2 = chrono::steady_clock::now();
+    // auto diff2 = end2 - start2;
+    // std::cout << chrono::duration <double, nano> (diff2).count() << " ns" << endl;
+    // std::cout << chrono::duration <double, nano> (diff2).count()/1000000 << " ms" << endl;
+    // std::cout << chrono::duration <double, nano> (diff2).count()/1000000000 << " s" << endl;
+    //     std::cout<<"---------------------------------------" << std::endl;
 
+
+
+   
+
+
+
+
+
+
+
+    // std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (3) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<std::endl;
+
+
+
+    //-----------------------------------------------------------------------------------------------------
+    int size = strlen((char*)encMsgOut);
+    // std::cout<< "size from encryption: "<< encLen <<" "<< "Size form sizeof() function: "<< size<<std::endl;
+
+
+    // std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (4) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<std::endl;
+
+
+
+    // struct bench_data *data2=new bench_data;
+    // data2->op_size =  4096;
+    // char* contentsChars2 = new char[data2->op_size];
+    // data2->object_contents=contentsChars2;
+
+    // sanitize_object_contents(data2, data2->op_size);
+
+    //  // encrypt plaintext
+    // unsigned char *plaintext5 = (unsigned char *)data2->object_contents;
+    // unsigned char *encMsgOut5;
+    // int encLen5 = cryptObj.aesEncrypt(plaintext5, data2->op_size, &encMsgOut5);
+    // std::cout << "encLen4 :  " << encLen4 << std::endl;
+    // std::cout << "plaintext5 :  " << plaintext5 << std::endl;
+  
+
+    // // derypt
+    // char *decMsg5;
+    // cryptObj.aesDecrypt(encMsgOut5, encLen5, &decMsg5);
+    // std::cout << "decMsg5 :  " << decMsg5 << std::endl;
+
+    // std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (5) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<std::endl;
+
+   
 }

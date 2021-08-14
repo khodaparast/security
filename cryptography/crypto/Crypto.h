@@ -26,7 +26,7 @@
 #define KEY_SERVER_PUB 1
 #define KEY_CLIENT_PUB 2
 #define KEY_AES        3
-#define KEY_AES_IV     4
+#define KEY_AES_IV     4 
 
 class Crypto {
 
