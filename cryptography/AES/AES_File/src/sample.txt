@@ -1,3 +1,0 @@
-
-A file for testing encryption process!!!
-Add some more text.
