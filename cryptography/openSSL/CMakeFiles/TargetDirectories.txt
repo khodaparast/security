@@ -1,3 +1,0 @@
-/home/fatemeh/Desktop/gitProject/security/cryptography/openSSL/CMakeFiles/rebuild_cache.dir
-/home/fatemeh/Desktop/gitProject/security/cryptography/openSSL/CMakeFiles/edit_cache.dir
-/home/fatemeh/Desktop/gitProject/security/cryptography/openSSL/CMakeFiles/FKHEncryption.dir

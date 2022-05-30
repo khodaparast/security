@@ -1,1 +1,0 @@
-/usr/bin/c++  -lcrypto -lpthread -lssl  -lz -ldl   CMakeFiles/FKHEncryption.dir/src/test_ssl_enc.cc.o  -o FKHEncryption  /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so 
